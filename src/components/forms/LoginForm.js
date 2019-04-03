@@ -7,7 +7,9 @@ class LoginForm extends Component {
       email: "",
       password: ""
     },
-    errors: {}
+    errors: {},
+    validateClassEmail: "",
+    validateClassPassword: ""
   };
 
   handleLoginFormChange = event => {
@@ -17,84 +19,86 @@ class LoginForm extends Component {
   };
 
   handleLoginFormSubmit = event => {
-    event.preventDefault();
     const errors = this.validate(this.state.data);
     this.setState({
       errors
     });
+
+    if (errors.email && errors.password) {
+      event.preventDefault();
+    } else {
+      // API call logic goes here
+    }
   };
 
   validate = data => {
     const errors = {};
-    if (!validator.isEmail(data.email)) errors.email = "Invalid email";
-    if (!data.password) errors.password = "Password can't be blank";
+    if (!validator.isEmail(data.email)) {
+      errors.email = "Invalid email";
+      this.setState({
+        validateClassEmail: "is-invalid"
+      });
+    } else {
+      this.setState({
+        validateClassEmail: "is-valid"
+      });
+    }
+    if (!data.password) {
+      errors.password = "Password can't be blank";
+      this.setState({
+        validateClassPassword: "is-invalid"
+      });
+    } else {
+      this.setState({
+        validateClassPassword: "is-valid"
+      });
+    }
     return errors;
   };
 
   render() {
     return (
-      <form onSubmit={this.handleLoginFormSubmit}>
+      <form
+        onSubmit={this.handleLoginFormSubmit}
+        className="needs-validation"
+        noValidate
+      >
         <div className="form-group">
-          <label htmlFor="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            placeholder="example@example.com"
-            className="form-control"
-            onChange={this.handleLoginFormChange}
-            value={this.state.data.email || ""}
-          />
-          <small id="emailHelp" className="form-text text-muted">
-            We'll never share your email with anyone else.
-          </small>
-
-          {this.state.errors.email && (
-            <div
-              className="alert alert-danger alert-dismissible fade show"
-              role="alert"
-            >
-              {this.state.errors.email}
-              <button
-                type="button"
-                className="close"
-                data-dismiss="alert"
-                aria-label="Close"
-              >
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-          )}
+          <div>
+            <label htmlFor="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="example@example.com"
+              className={`${this.state.validateClassEmail} form-control`}
+              onChange={this.handleLoginFormChange}
+              value={this.state.data.email || ""}
+            />
+            <div className="invalid-feedback">{this.state.errors.email}</div>
+          </div>
 
           <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              name="password"
-              className="form-control"
-              id="password"
-              placeholder="password"
-              onChange={this.handleLoginFormChange}
-              value={this.state.data.password || ""}
-            />
-          </div>
-          {this.state.errors.password && (
-            <div
-              className="alert alert-danger alert-dismissible fade show"
-              role="alert"
-            >
-              {this.state.errors.password}
-              <button
-                type="button"
-                className="close"
-                data-dismiss="alert"
-                aria-label="Close"
-              >
-                <span aria-hidden="true">&times;</span>
-              </button>
+            <div>
+              <label htmlFor="password">Password</label>
+              <input
+                type="password"
+                name="password"
+                className={`${this.state.validateClassPassword} form-control`}
+                id="password"
+                placeholder="password"
+                onChange={this.handleLoginFormChange}
+                value={this.state.data.password || ""}
+              />
+              <div className="invalid-feedback">
+                {this.state.errors.password}
+              </div>
             </div>
-          )}
-          <button className="btn btn-primary">Login</button>
+          </div>
+
+          <button type="submit" className="btn btn-primary">
+            Login
+          </button>
         </div>
       </form>
     );
